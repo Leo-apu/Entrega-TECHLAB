@@ -1,0 +1,14 @@
+{
+  "name": "techlab",
+  "version": "1.0.0",
+  "description": " Herramienta para gestión de inventarios de productos en una tienda online.",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["node", "cli", "api", "fakestore"],
+  "author": "Cruz, Leandro Victorino",
+  "license": "ISC"
+}

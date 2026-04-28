@@ -26,5 +26,14 @@ export class ProductService {
     body: JSON.stringify(data),
     headers: { 'Content-Type': 'application/json' }
   });
-  static delete = (id) => this.request(`products/${id}`, { method: 'DELETE' });
+
+  static update = (id, data) => this.request(`products/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  static delete = (id) => this.request(`products/${id}`, { 
+    method: 'DELETE' 
+  });
 }

@@ -1,54 +1,66 @@
 import { ProductService } from './services/product.service.js';
 
+function formatProduct(p, priceAsString = false) {
+  return [
+    `id: ${p.id}`,
+    `title: '${p.title}'`,
+    `price: ${priceAsString ? `'${p.price}'` : p.price}`,
+    `category: '${p.category}'`
+  ].join("\n");
+}
+
 export const runAction = async (args) => {
   const [method, path, ...params] = args;
   const id = path?.split('/')[1];
 
-  // --- LÓGICA PARA LISTAR TODO (GET products) ---
   if (method === 'GET' && !id) {
     const products = await ProductService.getAll();
-    
-    // Limpiar listado para mostrar en consola
-    if (products) {
-      const cleanList = products.map(p => ({
-        ID: p.id,
-        Título: p.title.length > 35 ? p.title.substring(0, 35) + "..." : p.title,
-        Precio: `$${p.price.toFixed(2)}`,
-        Categoría: p.category
-      }));
 
-      console.log("\n LISTADO DE PRODUCTOS EN TIENDA");
-      console.table(cleanList);
-    }
-  } 
-
-  // --- LÓGICA PARA UN PRODUCTO (GET products/15) ---
-  else if (method === 'GET' && id) {
-    const p = await ProductService.getById(id);
-
-    // Limpiar detalle para mostrar en consola
-    if (p) {
-      console.log(`\n DETALLE DEL PRODUCTO `);
-      console.log(`-----------------------------------`);
-      console.log(` ID: ${p.id}`);
-      console.log(` Título: ${p.title}`);
-      console.log(` Precio: $${p.price}`);
-      console.log(` Categoría: ${p.category}`);
-      console.log(` Descripción: ${p.description.substring(0, 100)}...`);
-      console.log(`-----------------------------------\n`);
-    }
+    console.log("[");
+    products.forEach(p => {
+      console.log(`{ id: ${p.id}, title: '${p.title}', price: ${p.price}, category: '${p.category}' },`);
+    });
+    console.log("]");
   }
 
-  // --- LÓGICA PARA CREAR (POST) ---
+  else if (method === 'GET' && id) {
+    const p = await ProductService.getById(id);
+    console.log(formatProduct(p));
+  }
+
   else if (method === 'POST') {
     const [title, price, category] = params;
-    const res = await ProductService.create({ title, price, category });
-    console.log(`\n ¡Éxito! Producto creado. ID asignado: ${res.id}\n`);
-  } 
 
-  // --- LÓGICA PARA BORRAR (DELETE) ---
+    const res = await ProductService.create({
+      title,
+      price: parseFloat(price),
+      category
+    });
+
+    console.log(`id: ${res.id}`);
+    console.log(`title: '${title}'`);
+    console.log(`price: '${price}'`);
+    console.log(`category: "${category}"`);
+  }
+
+  else if (method === 'PUT' && id) {
+  const [title, price, category] = params;
+
+  const res = await ProductService.update(id, {
+    title,
+    price: parseFloat(price),
+    category
+  });
+
+    console.log(`id: ${id}`);
+    console.log(`title: '${title}'`);
+    console.log(`price: '${price}'`);
+    console.log(`category: "${category}"`);
+  }
+
   else if (method === 'DELETE' && id) {
     const res = await ProductService.delete(id);
-    console.log(`\n  Producto ${id} eliminado. Respuesta API:`, res ? "OK" : "Error");
+
+    console.log(formatProduct(res));
   }
 };
